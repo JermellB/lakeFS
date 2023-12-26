@@ -374,10 +374,8 @@ conf = lakefs_client.Configuration(
         """
         if self.refresh_api_key_hook is not None:
             self.refresh_api_key_hook(self)
-        key = self.api_key.get(identifier, self.api_key.get(alias) if alias is not None else None)
-        if key:
-            prefix = self.api_key_prefix.get(identifier)
-            if prefix:
+        if key := self.api_key.get(identifier, self.api_key.get(alias) if alias is not None else None):
+            if prefix := self.api_key_prefix.get(identifier):
                 return "%s %s" % (prefix, key)
             else:
                 return key

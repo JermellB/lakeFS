@@ -233,9 +233,8 @@ class OpenApiModel(object):
         # is a list of visited classes. get_discriminator_class may recursively
         # call itself and update the list of visited classes, and the initial
         # value must be an empty list. Hence not using 'visited_composed_classes'
-        new_cls = get_discriminator_class(
-                    cls, discr_propertyname_py, discr_value, [])
-        if new_cls is None:
+        if (new_cls := get_discriminator_class(
+                    cls, discr_propertyname_py, discr_value, [])) is None:
             path_to_item = kwargs.get('_path_to_item', ())
             disc_prop_value = kwargs.get(
                 discr_propertyname_js, kwargs.get(discr_propertyname_py))
@@ -436,9 +435,8 @@ class ModelComposed(OpenApiModel):
             return
 
         # set the attribute on the correct instance
-        model_instances = self._var_name_to_model_instances.get(
-            name, self._additional_properties_model_instances)
-        if model_instances:
+        if model_instances := self._var_name_to_model_instances.get(
+            name, self._additional_properties_model_instances):
             for model_instance in model_instances:
                 if model_instance == self:
                     self.set_attribute(name, value)
@@ -478,8 +476,7 @@ class ModelComposed(OpenApiModel):
                     v = model_instance._data_store[name]
                     if v not in values:
                         values.append(v)
-        len_values = len(values)
-        if len_values == 0:
+        if (len_values := len(values)) == 0:
             return default
         elif len_values == 1:
             return values[0]
@@ -493,8 +490,7 @@ class ModelComposed(OpenApiModel):
 
     def __getitem__(self, name):
         """get the value of an attribute using square-bracket notation: `instance[attr]`"""
-        value = self.get(name, self.__unset_attribute_value__)
-        if value is self.__unset_attribute_value__:
+        if (value := self.get(name, self.__unset_attribute_value__)) is self.__unset_attribute_value__:
             raise ApiAttributeError(
                 "{0} has no attribute '{1}'".format(
                     type(self).__name__, name),
@@ -508,10 +504,9 @@ class ModelComposed(OpenApiModel):
         if name in self.required_properties:
             return name in self.__dict__
 
-        model_instances = self._var_name_to_model_instances.get(
-            name, self._additional_properties_model_instances)
 
-        if model_instances:
+        if model_instances := self._var_name_to_model_instances.get(
+            name, self._additional_properties_model_instances):
             for model_instance in model_instances:
                 if name in model_instance._data_store:
                     return True
@@ -1035,8 +1030,7 @@ def change_keys_js_to_python(input_dict, model_class):
     reversed_attr_map = {value: key for key, value in
                          model_class.attribute_map.items()}
     for javascript_key, value in input_dict.items():
-        python_key = reversed_attr_map.get(javascript_key)
-        if python_key is None:
+        if (python_key := reversed_attr_map.get(javascript_key)) is None:
             # if the key is unknown, it is in error or it is an
             # additionalProperties variable
             python_key = javascript_key
@@ -1429,10 +1423,9 @@ def validate_and_convert_types(input_value, required_types_mixed, path_to_item,
         # all types are of the required types and there are no more inner
         # variables left to look at
         return input_value
-    inner_required_types = child_req_types_by_current_type.get(
+    if (inner_required_types := child_req_types_by_current_type.get(
         type(input_value)
-    )
-    if inner_required_types is None:
+    )) is None:
         # for this type, there are not more inner variables left to look at
         return input_value
     if isinstance(input_value, list):
@@ -1561,8 +1554,7 @@ def convert_js_args_to_python_args(fn):
     from functools import wraps
     @wraps(fn)
     def wrapped_init(self, *args, **kwargs):
-        spec_property_naming = kwargs.get('_spec_property_naming', False)
-        if spec_property_naming:
+        if spec_property_naming := kwargs.get('_spec_property_naming', False):
             kwargs = change_keys_js_to_python(kwargs, self.__class__)
         return fn(self, *args, **kwargs)
     return wrapped_init
@@ -1846,8 +1838,7 @@ def validate_get_composed_info(constant_args, model_args, self):
     composed_instances = []
     allof_instances = get_allof_instances(self, model_args, constant_args)
     composed_instances.extend(allof_instances)
-    oneof_instance = get_oneof_instance(self.__class__, model_args, constant_args)
-    if oneof_instance is not None:
+    if (oneof_instance := get_oneof_instance(self.__class__, model_args, constant_args)) is not None:
         composed_instances.append(oneof_instance)
     anyof_instances = get_anyof_instances(self, model_args, constant_args)
     composed_instances.extend(anyof_instances)

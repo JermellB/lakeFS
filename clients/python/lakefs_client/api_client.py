@@ -605,8 +605,7 @@ class ApiClient(object):
             return
 
         for auth in auth_settings:
-            auth_setting = self.configuration.auth_settings().get(auth)
-            if auth_setting:
+            if auth_setting := self.configuration.auth_settings().get(auth):
                 if auth_setting['in'] == 'cookie':
                     headers['Cookie'] = auth_setting['value']
                 elif auth_setting['in'] == 'header':
@@ -732,8 +731,7 @@ class Endpoint(object):
         }
 
         for param_name, param_value in kwargs.items():
-            param_location = self.location_map.get(param_name)
-            if param_location is None:
+            if (param_location := self.location_map.get(param_name)) is None:
                 continue
             if param_location:
                 if param_location == 'body':
@@ -820,13 +818,11 @@ class Endpoint(object):
 
         params = self.__gather_params(kwargs)
 
-        accept_headers_list = self.headers_map['accept']
-        if accept_headers_list:
+        if accept_headers_list := self.headers_map['accept']:
             params['header']['Accept'] = self.api_client.select_header_accept(
                 accept_headers_list)
 
-        content_type_headers_list = self.headers_map['content_type']
-        if content_type_headers_list:
+        if content_type_headers_list := self.headers_map['content_type']:
             header_list = self.api_client.select_header_content_type(
                 content_type_headers_list)
             params['header']['Content-Type'] = header_list
