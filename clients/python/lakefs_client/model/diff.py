@@ -101,14 +101,12 @@ class Diff(ModelNormal):
 
     _composed_schemas = {}
 
-    required_properties = set([
-        '_data_store',
+    required_properties = {'_data_store',
         '_check_type',
         '_spec_property_naming',
         '_path_to_item',
         '_configuration',
-        '_visited_composed_classes',
-    ])
+        '_visited_composed_classes',}
 
     @convert_js_args_to_python_args
     def __init__(self, type, path, path_type, *args, **kwargs):  # noqa: E501
